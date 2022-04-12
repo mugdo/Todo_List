@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>To Do Item</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@1,200&display=swap" rel="stylesheet">
+        <style>
+            body{
+                background-color: #FAFAFA;
+                font-family: 'Nunito', sans-serif;
+                padding-top: 50px;
+            }
+            h1,
+            h2,
+            h3,
+            h4,
+            h5{
+                font-family: 'Ralewy', sans-serif;
+            }
+            a,
+            p{
+                color: #4b5156;
+            }
+            .continer{
+                max-width: 550px;
+                margin: auto;
+                background-color: #FFFF;
+                box-shadow: 2px 2px 13px rgba(0, 0, 0, 0.21);
+            }
+            .header-bar{
+                display: flex;
+                justify-content: space-between;
+                color: #FFFF;
+                padding: 10px;
+                border-radius: 5px 5px 0 0 ;
+                background: linear-gradient(90deg, #3b170d 0%, #380b31 43%, #b12e94 100%);
+            }
+            .header-bar a{
+                color: rgb(247, 247, 247);
+                text-decoration: none;
+            }
+            .task-wraper{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px;
+                background-color: #FFFF;
+                border-top: 1px solid rgb(246, 246, 246);
+            }
+            .task-title{
+                display: flex;
+            }
+            .task-title a{
+                text-decoration: none;
+                color: #4b5156;
+                margin-left: 10px;
+            }
+            .task-complite-icon{
+                height: 20px;
+                width: 20px;
+                background-color: rgb(105, 192, 105);
+                border-radius: 50%;
+            }
+            .task-incomplite-icon{
+                height: 20px;
+                width: 20px;
+                background-color: rgb(218, 218, 218);
+                border-radius: 50%;
+            }
+            .delete-link{
+                text-decoration: none;
+                font-weight: 900;
+                color: #CF4949;
+                font-size: 22px;
+                line-height: 0;
+            }
+            #search-add-wraper{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+            }
+            #add-link{
+                color: #EB796f;
+                text-decoration: none;
+                font-size: 42px;
+                text-shadow: 1px 1px #81413b;
+            }
+            input[type=text],
+            input[type=password],
+            textarea{
+                border: 1px solid #EB796F;
+                border-radius: 5px;
+                padding: 10px;
+                width: 90%;
+            }
+            label{
+                padding-top: 10px !important;
+                display: block;
+            }
+            .Button{
+                border: 1px solid #EB796F;
+                background-color: #FAFAFA;
+                color: #EB796F;
+                padding: 5px;
+                font-size: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                text-decoration: none;
+
+            }
+            .card-body{
+                padding: 20px;
+            }
+
+          
+        </style>
+    </head>
+    <body>
+        <div class="continer">
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+    </body>
+</html>
