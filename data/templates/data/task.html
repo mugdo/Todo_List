@@ -7,6 +7,9 @@
         <h4 style="margin:0">You have <i>{{ count }}</i> incomplite task{{ count|pluralize:"s" }}</h4>
     </div>
     {% if request.user.is_authenticated%}
+    {% if user.is_superuser %}
+        <a href="{% url 'users' %}">Users</a>
+    {% endif %}
     <a href="{% url 'logout' %}">Logout</a>
     {% else %}
     <a href="{% url 'login' %}">Login</a>
@@ -31,6 +34,7 @@
             <div class="task-complite-icon"></div>
             <i><s><a href="{% url 'task-update' item.pk  %}">{{item}}</a></s></i>
         </div>
+        <a class="delete-link" href="{% url 'task-delete' item.pk %}">&#215</a>
 
         {% else %}
         <div class="task-title">

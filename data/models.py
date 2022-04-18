@@ -1,6 +1,9 @@
-from venv import create
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, PermissionManager
+from django.forms import EmailField
+from django import forms
 
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -14,3 +17,22 @@ class Task(models.Model):
 
     class Meta:
         ordering = ['complite']
+
+
+class UserRegistationForm(UserCreationForm):
+    email = forms.EmailField()
+    # phone = forms.CharField()
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+        error_messages = {
+            'password_mismatch': {
+                'unique': 'This user is already exist.',
+            },
+           "password_mismatch": "password error"              
+            
+        }
+
+    
+     
+

@@ -5,14 +5,31 @@
     <h1>Register</h1>
 </div>
 <div class="card-body">
-    <form method = "post">
-        {% csrf_token %}
+    {{ form.username_error }}
+    {{ form.pass_error }}
+    <form method = "post">{% csrf_token %}
         <label>{{form.username.label}}</label>
         {{ form.username}}
+
+        {% if form.username.errors %}
+            {{form.username.errors }}
+        {% endif %} 
+
+        <label>{{form.email.label}}</label>
+        {{ form.email}}
+
+        <!-- <label>{{form.phone.label}}</label>
+        {{ form.phone}} -->
+
         <label>{{form.password1.label}}</label>
         {{ form.password1}}
+
         <label>{{form.password2.label}}</label>
         {{ form.password2}}
+        {% if form.password2.errors %}
+            {{ form.password2.errors}}
+        {% endif %} 
+
         <input style="margin-top: 10px;" class="Button" type="submit" value="Register">
     </form>
     <p>I already have an account? <a href="{% url 'login' %}">Login</a></p>
