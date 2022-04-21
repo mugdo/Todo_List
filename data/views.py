@@ -32,8 +32,11 @@ class UserLogin(LoginView):
         password = request.POST.get('password')
         user_name_object= User.objects.filter(username=username).first()
         user_email_object = User.objects.filter(email=username).first()
+
         if user_name_object:
             if check_password(password,user_name_object.password):
+                user_profile_object= user_name_object.related_profile
+                print("is block or not:", user_profile_object.blocked)
                 print("user password is exist")
                 login(self.request,user_name_object)
                 return redirect('tasks')
@@ -52,14 +55,6 @@ class UserLogin(LoginView):
         else:
             # form.add_error("user_error","Username or password not correct")
             return render(request, 'data/login.html', {'form':form})
-
-    # def get(self, request, *args, **kwargs):
-    #     if not request.user:
-    #        return redirect('login')
-    #     else:
-    #         return redirect('tasks')
-
-
 
 
 class UserRegister(FormView):
@@ -180,13 +175,12 @@ class UserProfile(LoginRequiredMixin, ListView):
             user_profile.save()    
         else:
             UserProfileModel.objects.create(user=user_object, first_name=firstName, last_name=lastName, address=address, image=image)
-        return render(request, 'data/users.html')
+        return render(request, 'data/userInfo.html',{'user':user_object,'profile':user_profile})
     def get(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
         if pk == request.user.pk or request.user.is_superuser:
             user_object= User.objects.filter(pk=pk).first()
             user_profile_object= user_object.related_profile
-            print("userprofile object::::::::::", user_profile_object)
             return render(request, 'data/userInfo.html',{'user':user_object,'profile':user_profile_object})
         else:
             return redirect('profile',pk=request.user.pk)

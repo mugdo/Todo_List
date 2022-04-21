@@ -38,6 +38,7 @@ class UserProfileModel(models.Model):
     first_name = models.CharField(max_length=250, null=True)
     last_name = models.CharField(max_length=250,null=True)
     address = models.CharField(max_length=250,null=True)
+    blocked = models.BooleanField(default=False)
 
     image = models.ImageField(null=True, blank=True, upload_to='')
     def __str__(self):
