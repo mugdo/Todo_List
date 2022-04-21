@@ -5,7 +5,7 @@
 </div>
 <div class="header-bar">
     <div>
-        <h2>Hey {{ request.user|title }} </h2>
+        <h2>Superuser <a href="{% url 'profile' request.user.pk  %}">{{ request.user|title }}</a></h2>
     
     </div>
     {% if request.user.is_authenticated%}
@@ -20,7 +20,7 @@
         <tb>
             {% for user in page_obj %}
             <tr>
-                <td>{{user.username}}</td>
+                <td><a href="{% url 'profile' user.pk %}">{{user.username}}</a></td>
                 {% if user.email %}
                     <td>{{user.email}}</td>
                 {% else %}

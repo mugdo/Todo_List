@@ -1,4 +1,5 @@
 from multiprocessing import context
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -13,10 +14,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 
 from .models import UserRegistationForm
-from .models import Task
+from .models import Task, UserProfileModel
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-
+from .forms import UserProfileForm
 
 
 class UserLogin(LoginView):
@@ -70,6 +71,7 @@ class UserRegister(FormView):
         user = form.save()
         if user is not None:
             login(self.request, user)
+            print("user")
         return super(UserRegister, self).form_valid(form)
     # pass_error = ""
     # username_error =""
@@ -109,11 +111,15 @@ class UserRegister(FormView):
 
 class UserList(LoginRequiredMixin, ListView):
     def get(self, request, *args, **kwargs):
-        user_list = User.objects.all()
-        pagnator = Paginator(user_list,10)
-        page = request.GET.get('page')
-        page_obj = pagnator.get_page(page)
-        return render(request, 'data/users.html', {'page_obj':page_obj})
+        if request.user.is_superuser:
+            user_list = User.objects.all()
+            pagnator = Paginator(user_list,10)
+            page = request.GET.get('page')
+            page_obj = pagnator.get_page(page)
+            return render(request, 'data/users.html', {'page_obj':page_obj})
+        else:
+            return redirect('tasks')
+
         
 
 class TaskList(LoginRequiredMixin, ListView):
@@ -156,4 +162,31 @@ class TaskDelete(LoginRequiredMixin, DeleteView):
     model = Task
     context_object_name = 'Task'
     success_url = reverse_lazy('tasks')
-
+class UserProfile(LoginRequiredMixin, ListView):
+    def post(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        print("primary key: ", pk)
+        user_object= User.objects.filter(pk=pk).first()
+        user_profile= UserProfileModel.objects.filter(user=user_object).first()
+        firstName = request.POST.get('first_name')
+        lastName = request.POST.get('last_name')
+        address = request.POST.get('address')
+        image = request.FILES["image"]
+        if user_profile:
+            user_profile.first_name = firstName
+            user_profile.last_name = lastName
+            user_profile.address = address
+            user_profile.image = image
+            user_profile.save()    
+        else:
+            UserProfileModel.objects.create(user=user_object, first_name=firstName, last_name=lastName, address=address, image=image)
+        return render(request, 'data/users.html')
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        if pk == request.user.pk or request.user.is_superuser:
+            user_object= User.objects.filter(pk=pk).first()
+            user_profile_object= user_object.related_profile
+            print("userprofile object::::::::::", user_profile_object)
+            return render(request, 'data/userInfo.html',{'user':user_object,'profile':user_profile_object})
+        else:
+            return redirect('profile',pk=request.user.pk)
