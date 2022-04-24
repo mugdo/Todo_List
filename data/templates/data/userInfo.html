@@ -13,7 +13,7 @@
 <div class="card-body">
     <form method = "post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label>User Name: {{user}}</label>
+            <label>User Name: {{user}}</label>
         {% if profile.image %}
         <img src="{{profile.image.url}}" alt="Smiley face" width="120" height="120">
    
@@ -30,10 +30,22 @@
 
         <label for="img">Select image:</label>
         <input type="file" id="img" name="image">
+
+        {% if request.user.is_superuser and request.user != user %}
+            <label for="status">Status:</label>
+            {% if profile.blocked %}
+                <input type="checkbox" id="check" name="check" checked>
+            {% else %}
+                <input type="checkbox" id="check" name="check">
+            {% endif %}
+        {% endif %}
+      
+          
+
         <br>
         <br>
 
-
+ 
 
         <input style="margin-top: 10px;" class="Button" type="submit" value="Update">
     </form>

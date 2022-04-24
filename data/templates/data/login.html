@@ -10,6 +10,9 @@
         {{ form.as_p }}
         <input class="Button" type="submit" value="Login">
     </form>
+    {% if error_messsage %}
+        {{error_messsage.messag}}
+    {% endif %}
     <p>I don't have any account? <a href="{% url 'register' %}">Sing UP</a></p>
 </div>
 

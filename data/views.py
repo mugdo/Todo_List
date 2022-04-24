@@ -35,14 +35,22 @@ class UserLogin(LoginView):
 
         if user_name_object:
             if check_password(password,user_name_object.password):
-                user_profile_object= user_name_object.related_profile
-                print("is block or not:", user_profile_object.blocked)
-                print("user password is exist")
-                login(self.request,user_name_object)
-                return redirect('tasks')
+                if UserProfileModel.objects.filter(user=user_name_object).first():
+                    user_profile_object= user_name_object.related_profile
+                    print("is block or not -> login page::", user_profile_object.blocked)
+                    if user_profile_object.blocked:
+                        error_messsage = {
+                            'messag':'You are blocked',
+                        }
+                        return render(request, 'data/login.html', {'form':form, 'error_messsage':error_messsage})
+                    else:
+                        print("user password is exist")
+                        login(self.request,user_name_object)
+                        return redirect('tasks')
+
+              
                   
             else:
-                print("password doesn't mach1")
                 messages.error(request, "Comment Invalid!") 
                 return render(request, 'data/login.html', {'form':form})
         elif user_email_object:
@@ -166,21 +174,35 @@ class UserProfile(LoginRequiredMixin, ListView):
         firstName = request.POST.get('first_name')
         lastName = request.POST.get('last_name')
         address = request.POST.get('address')
-        image = request.FILES["image"]
+        image = request.FILES.get("image")
+        status = request.POST.get('check', "false")
+
         if user_profile:
             user_profile.first_name = firstName
             user_profile.last_name = lastName
             user_profile.address = address
             user_profile.image = image
+            if not user_profile.image:
+                user_profile.image = user_object.related_profile.image
+            if status == 'on':
+                print("He is blcoked..")
+                user_profile.blocked = True
+            else:
+                print("He is unblocked")
+                user_profile.blocked  = False
             user_profile.save()    
         else:
             UserProfileModel.objects.create(user=user_object, first_name=firstName, last_name=lastName, address=address, image=image)
+        user_profile= UserProfileModel.objects.filter(user=user_object).first()
         return render(request, 'data/userInfo.html',{'user':user_object,'profile':user_profile})
     def get(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
         if pk == request.user.pk or request.user.is_superuser:
             user_object= User.objects.filter(pk=pk).first()
-            user_profile_object= user_object.related_profile
+            if UserProfileModel.objects.filter(user=user_object).first():
+                user_profile_object= user_object.related_profile
+            else:
+                user_profile_object = ''
             return render(request, 'data/userInfo.html',{'user':user_object,'profile':user_profile_object})
         else:
             return redirect('profile',pk=request.user.pk)

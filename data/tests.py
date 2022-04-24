@@ -1,3 +1,6 @@
 from django.test import TestCase
 
-# Create your tests here.
+
+
+#  git command for reset github code
+# git stash
