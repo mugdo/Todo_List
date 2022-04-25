@@ -17,15 +17,16 @@
     <table>
         <th>Username</th>
         <th>Email</th>
-        <tb>
+        <tb id="tabile_userlist">
             {% for user in page_obj %}
-            <tr>
-                <td><a href="{% url 'profile' user.pk %}">{{user.username}}</a></td>
-                {% if user.email %}
-                    <td>{{user.email}}</td>
-                {% else %}
-                    <td>-</td>
-                {% endif %}     
+                <tr id="tabile_row">
+                    <td><a href="{% url 'profile' user.pk %}">{{user.username}}</a></td>
+                    {% if user.email %}
+                        <td>{{user.email}}</td>
+                    {% else %}
+                        <td>-</td>
+                    {% endif %}    
+
             </tr>
             {% endfor %}
         </tb>
@@ -33,20 +34,48 @@
   
 </div>
 <br><br>
+
 <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            <a onclick="pagination('{{ page_obj.previous_page_number }}')">previous</a>
         {% endif %}
+
+        {% if page_obj.has_next %}
+            <a onclick="pagination('{{ page_obj.next_page_number }}')" >next</a>
+        {% endif %}
+
+        <br>
         <span class="current">
             Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
         </span>
-
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
     </span>
 </div>
+
+<script>
+    function pagination(page_num){
+        let url = "{% url 'users' %}"
+        url += '?page=' + page_num
+        $.ajax({
+        url: url,
+        type: "GET",
+        success: function(response){
+            alert("success")
+            console.log(response.data);
+            console.log(response.data[0]['username'])
+            let a =''
+            for ( i = 0; i <response.data.length(); ++i ) {
+                a+= `<tr>
+                        <td><a >${response.data[i].username}</a></td>
+                        <td>${response.data[i].email}</td>
+                </tr>`
+
+            }
+            $('#tabile_row').html("");
+            $( "#tabile_userlist" ).html( a );
+        }});
+    }
+</script>
+
+
 {% endblock content %}

@@ -5,3 +5,4 @@ Pillow==9.1.0
 six==1.16.0
 sqlparse==0.4.2
 trollius==2.1.post2
+# pip freeze > requirements.txt

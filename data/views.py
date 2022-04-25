@@ -1,5 +1,6 @@
 from multiprocessing import context
-from django.http import Http404
+from django.forms.models import model_to_dict
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -18,6 +19,8 @@ from .models import Task, UserProfileModel
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from .forms import UserProfileForm
+import json
+from django.shortcuts import render, HttpResponse
 
 
 class UserLogin(LoginView):
@@ -40,7 +43,7 @@ class UserLogin(LoginView):
                     print("is block or not -> login page::", user_profile_object.blocked)
                     if user_profile_object.blocked:
                         error_messsage = {
-                            'messag':'You are blocked',
+                            'messag':'You are blocked.Create one',
                         }
                         return render(request, 'data/login.html', {'form':form, 'error_messsage':error_messsage})
                     else:
@@ -110,16 +113,32 @@ class UserRegister(FormView):
             return redirect('tasks')
         return super(UserRegister, self).get(*args, **kwargs)
    
-
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
 class UserList(LoginRequiredMixin, ListView):
     def get(self, request, *args, **kwargs):
         if request.user.is_superuser:
             user_list = User.objects.all()
-            pagnator = Paginator(user_list,10)
+            pagnator = Paginator(user_list,4)
             page = request.GET.get('page')
             page_obj = pagnator.get_page(page)
-            return render(request, 'data/users.html', {'page_obj':page_obj})
+            # print("request of ajax or not :::", page_obj.number())
+            if is_ajax(request):
+                result = {}
+                for value in page_obj.object_list:
+                    # print("user_value:::::",value.username)
+                    # print("user_value:::::",value.email)
+                    result[value.id]={}
+                    result[value.id]['username']=value.username
+                    result[value.id]['email']=value.email
+                print("result",result)
+                result['has_next']=page_obj.has_next()
+                result['has_previous']=page_obj.has_previous()
+        
+                return JsonResponse({'data':result})
+
+            return render(request,'data/users.html',{'page_obj':page_obj})
         else:
             return redirect('tasks')
 
@@ -190,7 +209,7 @@ class UserProfile(LoginRequiredMixin, ListView):
             else:
                 print("He is unblocked")
                 user_profile.blocked  = False
-            user_profile.save()    
+            user_profile.save()  
         else:
             UserProfileModel.objects.create(user=user_object, first_name=firstName, last_name=lastName, address=address, image=image)
         user_profile= UserProfileModel.objects.filter(user=user_object).first()
