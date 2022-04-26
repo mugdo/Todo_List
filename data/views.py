@@ -125,18 +125,25 @@ class UserList(LoginRequiredMixin, ListView):
             page_obj = pagnator.get_page(page)
             # print("request of ajax or not :::", page_obj.number())
             if is_ajax(request):
+                user_request =[]
                 result = {}
+                data ={}
                 for value in page_obj.object_list:
-                    # print("user_value:::::",value.username)
+                    # print("user_value:::::",value)
                     # print("user_value:::::",value.email)
-                    result[value.id]={}
-                    result[value.id]['username']=value.username
-                    result[value.id]['email']=value.email
-                print("result",result)
-                result['has_next']=page_obj.has_next()
-                result['has_previous']=page_obj.has_previous()
-        
-                return JsonResponse({'data':result})
+                    result={}
+                    result['username']=value.username
+                    result['email']=value.email
+                    result['id']=value.id
+                    user_request.append(result)
+                print("result::::::::::::",user_request[0]['id'])
+                data['has_next']=page_obj.has_next()
+                data['has_previous']=page_obj.has_previous() 
+                data['previous_page_number']=page_obj.previous_page_number() if page_obj.has_previous() else 0
+                data['next_page_number']=page_obj.next_page_number() if page_obj.has_next() else 0
+                data['num_pages']=page_obj.paginator.num_pages
+                data['number']=page_obj.number
+                return JsonResponse({'data':data, 'user_request':user_request})
 
             return render(request,'data/users.html',{'page_obj':page_obj})
         else:

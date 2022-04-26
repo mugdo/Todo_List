@@ -14,10 +14,10 @@
     
 </div>
 <div class="card-body">
-    <table>
+    <table id="tabe">
         <th>Username</th>
         <th>Email</th>
-        <tb id="tabile_userlist">
+        <tbody id="tabile_userlist">
             {% for user in page_obj %}
                 <tr id="tabile_row">
                     <td><a href="{% url 'profile' user.pk %}">{{user.username}}</a></td>
@@ -29,7 +29,7 @@
 
             </tr>
             {% endfor %}
-        </tb>
+        </tbody>
     </table>
   
 </div>
@@ -37,16 +37,17 @@
 
 <div class="pagination">
     <span class="step-links">
-        {% if page_obj.has_previous %}
+        <!-- {% if page_obj.has_previous  %}
             <a onclick="pagination('{{ page_obj.previous_page_number }}')">previous</a>
-        {% endif %}
+        {% endif %} -->
 
-        {% if page_obj.has_next %}
-            <a onclick="pagination('{{ page_obj.next_page_number }}')" >next</a>
-        {% endif %}
+        <div id="check_page">
+            {% if page_obj.has_next %}
+                <a onclick="pagination('{{ page_obj.next_page_number }}')" >next</a>
+            {% endif %}
+        </div>
 
-        <br>
-        <span class="current">
+        <span id="current">
             Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
         </span>
     </span>
@@ -60,19 +61,41 @@
         url: url,
         type: "GET",
         success: function(response){
-            alert("success")
-            console.log(response.data);
-            console.log(response.data[0]['username'])
+            // alert("success")
+            console.log(response.data['has_previous']);
+            console.log(response.user_request)
             let a =''
-            for ( i = 0; i <response.data.length(); ++i ) {
+            for ( i = 0; i <response.user_request.length; i++ ) {
+                let id =response.user_request[i].id
                 a+= `<tr>
-                        <td><a >${response.data[i].username}</a></td>
-                        <td>${response.data[i].email}</td>
+                        <td><a href="/users/profile/`+ id +`">${response.user_request[i].username}</a></td>
+                        <td>${response.user_request[i].email}</td>
                 </tr>`
 
             }
-            $('#tabile_row').html("");
+            $('#tabile_userlist').html("");
             $( "#tabile_userlist" ).html( a );
+            let previous_page_number = response.data['previous_page_number']
+            let next_page_number = response.data['next_page_number']
+            let Paginator_button =''
+            if (response.data['has_previous']){
+                $('#check_page').html("");
+                Paginator_button =` <a onclick="pagination(`+ previous_page_number +`)">Previous</a>`
+                Paginator_button += ` `
+                $( "#check_page" ).html( Paginator_button )
+            }
+            if(response.data['has_next']){
+                $('#check_page').html("");
+                Paginator_button+=`<a onclick="pagination(`+ next_page_number +`)">Next</a>`
+                
+            }
+            Paginator_bottom = ``
+            Paginator_bottom = `Page `+ response.data['number'] +` of `+ response.data['num_pages'] +``
+            
+            $('#current').html("");
+            $( "#check_page" ).html( Paginator_button);
+            $( "#current" ).html(Paginator_bottom);
+
         }});
     }
 </script>
