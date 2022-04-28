@@ -28,21 +28,26 @@
 </div>
 
 <div class="task-item-wraper">
+    <a style="margin-left: 500px;" onclick="checkTask()" >Delete</a>
     {% for item in Task %}
+   
     <div class="task-wraper">
+        <input type="checkbox" id="select_item" name="item" value="{{item.pk}}">
         {% if item.complite %}
         <div class="task-title">
-            <div class="task-complite-icon"></div>
+            <div class=""></div>
+
             <i><s><a href="{% url 'task-update' item.pk  %}">{{item}}</a></s></i>
         </div>
-        <a class="delete-link" href="{% url 'task-delete' item.pk %}">&#215</a>
+        <a  class="delete-link" href="{% url 'task-delete' item.pk %}">&#215</a>
 
         {% else %}
         <div class="task-title">
-            <div class="task-incomplite-icon"></div>
+            <div class=""></div>
+           
             <a href="{% url 'task-update' item.pk  %}">{{item}}</a>
         </div>
-        <a class="delete-link" href="{% url 'task-delete' item.pk %}">&#215</a>
+        <a  class="delete-link" href="{% url 'task-delete' item.pk %}">&#215</a>
         {% endif %}  
     </div>
     {% empty %}
@@ -51,6 +56,38 @@
 
 </div>
 
+
+
+<script>
+
+function checkTask(){
+
+        let url = "/taskk/"
+        $.ajax({
+        url: url,
+
+        type: "GET",
+        success: function(response){
+            let check = 0;
+            $('input[type="checkbox"]').each(function() {
+                if ($(this).prop('checked')==true){ 
+                    check = 1;
+                }
+                
+            }); 
+            if (check==0) {
+                alert("Select one") 
+            }
+            else{
+                alert("Ongoing") 
+            }
+        },
+        error: function(response) {
+            alert("Button clik") 
+        }
+    });
+    }
+</script>
 {% endblock content %}
 
 

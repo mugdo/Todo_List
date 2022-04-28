@@ -2,6 +2,7 @@ from multiprocessing import context
 from django.forms.models import model_to_dict
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect
+from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
@@ -251,3 +252,8 @@ class UserProfile(LoginRequiredMixin, ListView):
                 return render(request,'data/userInfo.html',{'profile':user_profile_info})
         else:
             return redirect('profile',pk=request.user.pk)
+
+
+class Test(View):
+    def get(self, request):
+        return JsonResponse({})
