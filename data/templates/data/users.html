@@ -6,6 +6,7 @@
 <div class="header-bar">
     <div>
         <h2>Superuser <a href="{% url 'profile' request.user.pk  %}">{{ request.user|title }}</a></h2>
+        
     
     </div>
     {% if request.user.is_authenticated%}
@@ -20,7 +21,8 @@
         <tbody id="tabile_userlist">
             {% for user in page_obj %}
                 <tr id="tabile_row">
-                    <td><a href="{% url 'profile' user.pk %}">{{user.username}}</a></td>
+                    <!-- <td><a href="{% url 'profile' user.pk %}">{{user.username}}</a></td> -->
+                    <td> <a onclick="update_profile('{{user.pk}}')" href="" data-bs-toggle="modal" data-bs-target="#exampleModal">{{ user.username|title }}</a></h2>
                     {% if user.email %}
                         <td>{{user.email}}</td>
                     {% else %}
@@ -62,13 +64,12 @@
         type: "GET",
         success: function(response){
             // alert("success")
-            console.log(response.data['has_previous']);
-            console.log(response.user_request)
             let a =''
             for ( i = 0; i <response.user_request.length; i++ ) {
                 let id =response.user_request[i].id
+                let username = response.user_request[i].username
                 a+= `<tr>
-                        <td><a href="/users/profile/`+ id +`">${response.user_request[i].username}</a></td>
+                        <td><a onclick="update_profile(`+id+`)" href="" data-bs-toggle="modal" data-bs-target="#exampleModal">`+username +`</a></h2>
                         <td>${response.user_request[i].email}</td>
                 </tr>`
 

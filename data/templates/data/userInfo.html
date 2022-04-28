@@ -15,12 +15,12 @@
         {% csrf_token %}
             <label>User Name: {{user}}</label>
         {% if profile.image %}
-        <img src="{{profile.image.url}}" alt="Smiley face" width="120" height="120">
-   
+            <img src="{{profile.image.url}}" alt="Relord can't suppord image" width="120" height="120">
         {% endif  %} 
         
         <label>First Name</label>
         <input type="text" name="first_name" value="{{ profile.first_name }}" 
+        <br>
 
         <label>Last Name</label>
         <input type="text" name="last_name" value="{{ profile.last_name }}">
@@ -39,9 +39,6 @@
                 <input type="checkbox" id="check" name="check">
             {% endif %}
         {% endif %}
-      
-          
-
         <br>
         <br>
 

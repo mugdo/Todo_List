@@ -42,7 +42,7 @@ class UserProfileModel(models.Model):
 
     image = models.ImageField(null=True, blank=True, upload_to='')
     def __str__(self):
-        return self.first_name
+        return self.user.username
     
      
 

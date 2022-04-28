@@ -3,8 +3,8 @@
 
 <div class="header-bar">
     <div>
-        <h2>Hey <a href="{% url 'profile' request.user.pk  %}">{{ request.user|title }}</a></h2>
-       
+        <h2>Hey <a onclick="update_profile('{{user.pk}}')" href="" data-bs-toggle="modal" data-bs-target="#exampleModal">{{ request.user|title }}</a></h2>
+        
         <h4 style="margin:0">You have <i>{{ count }}</i> incomplite task{{ count|pluralize:"s" }}</h4>
     </div>
     {% if request.user.is_authenticated%}

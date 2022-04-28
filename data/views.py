@@ -39,7 +39,8 @@ class UserLogin(LoginView):
         if user_name_object:
             if check_password(password,user_name_object.password):
                 if UserProfileModel.objects.filter(user=user_name_object).first():
-                    user_profile_object= user_name_object.related_profile
+                    if user_name_object.related_profile:
+                        user_profile_object= user_name_object.related_profile
                     print("is block or not -> login page::", user_profile_object.blocked)
                     if user_profile_object.blocked:
                         error_messsage = {
@@ -50,7 +51,8 @@ class UserLogin(LoginView):
                         print("user password is exist")
                         login(self.request,user_name_object)
                         return redirect('tasks')
-
+                else:
+                    UserProfileModel.objects.create(user=user_name_object)
               
                   
             else:
@@ -192,6 +194,7 @@ class TaskDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'Task'
     success_url = reverse_lazy('tasks')
 class UserProfile(LoginRequiredMixin, ListView):
+    print("hit user profile>>>>>>>>>>>>>>>>>>>>>>")
     def post(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
         print("primary key: ", pk)
@@ -223,12 +226,28 @@ class UserProfile(LoginRequiredMixin, ListView):
         return render(request, 'data/userInfo.html',{'user':user_object,'profile':user_profile})
     def get(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
+        user_profile_info ={}
         if pk == request.user.pk or request.user.is_superuser:
             user_object= User.objects.filter(pk=pk).first()
             if UserProfileModel.objects.filter(user=user_object).first():
                 user_profile_object= user_object.related_profile
+                user_profile_info['username']=user_profile_object.user.username
+                user_profile_info['first_name']=user_profile_object.first_name
+                user_profile_info['last_name']=user_profile_object.last_name
+                user_profile_info['address']=user_profile_object.address
+                user_profile_info['blocked']=user_profile_object.blocked 
+                user_profile_info['image']=user_profile_object.image.url 
             else:
-                user_profile_object = ''
-            return render(request, 'data/userInfo.html',{'user':user_object,'profile':user_profile_object})
+                print("user_profile_object.user::::",user_object.username)
+                user_profile_info['username']=user_object.username
+                user_profile_info['first_name']=''
+                user_profile_info['last_name']=''
+                user_profile_info['address']=''
+                user_profile_info['blocked']=''
+                user_profile_info['image']=''
+            if is_ajax(request):
+                return JsonResponse({'profile': user_profile_info})
+            else:
+                return render(request,'data/userInfo.html',{'profile':user_profile_info})
         else:
             return redirect('profile',pk=request.user.pk)
