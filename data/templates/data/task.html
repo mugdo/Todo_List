@@ -31,8 +31,8 @@
     <a style="margin-left: 500px;" onclick="checkTask()" >Delete</a>
     {% for item in Task %}
    
-    <div class="task-wraper">
-        <input type="checkbox" id="select_item" name="item" value="{{item.pk}}">
+    <div class="task-wraper" id="task-wraper{{item.pk}}">
+        <input type="checkbox" id="{{item.pk}}" name="item" value="{{item.pk}}">
         {% if item.complite %}
         <div class="task-title">
             <div class=""></div>
@@ -59,34 +59,44 @@
 
 
 <script>
+csrf = '{{ csrf_token }}';
 
 function checkTask(){
-
-        let url = "/taskk/"
-        $.ajax({
-        url: url,
-
-        type: "GET",
-        success: function(response){
-            let check = 0;
-            $('input[type="checkbox"]').each(function() {
-                if ($(this).prop('checked')==true){ 
-                    check = 1;
-                }
+    let flag = 0;
+    let task_id = []
+    $('input[type="checkbox"]').each(function() {
+        if ($(this).prop('checked')==true){ 
+            task_id[flag]=$(this).attr("id")
+            console.log($(this).attr("id"))
+            flag++;
+        }
                 
-            }); 
-            if (check==0) {
-                alert("Select one") 
+    }); 
+    if (flag==0) {
+        alert("Select one") 
+    }
+
+    let url = "/task/delete/"
+    $.ajax({
+        url: url,
+        data : {'selected_task': task_id, 'csrfmiddlewaretoken': csrf},
+        type: "POST",
+        success: function(response){ 
+            for( let i = 0;i<task_id.length;i++)
+            {
+                $("#"+task_id[i]).remove(); 
+                $("#task-wraper"+task_id[i]).remove(); 
             }
-            else{
-                alert("Ongoing") 
-            }
+               
         },
         error: function(response) {
-            alert("Button clik") 
+            alert("Error") 
         }
+        
     });
-    }
+    // return false;
+
+}
 </script>
 {% endblock content %}
 

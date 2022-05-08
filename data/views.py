@@ -254,6 +254,14 @@ class UserProfile(LoginRequiredMixin, ListView):
             return redirect('profile',pk=request.user.pk)
 
 
-class Test(View):
-    def get(self, request):
-        return JsonResponse({})
+class Deletes(View):
+    def post(self, request):
+        if is_ajax(request):
+            request_getdata = request.POST.getlist('selected_task[]') 
+            print(request.POST)
+            print(len(request_getdata))
+            for id in request_getdata:
+                task = Task.objects.get(id=id)
+                task.delete()
+            return JsonResponse({})
+
